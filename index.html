@@ -512,7 +512,7 @@
             switchView('homeView');
         }
 
-        // 題目生成核心：音符走向判定
+        // 題目生成核心
         function generateQuestion(level) {
             let count = 2;
             if (level === 3 || level === 4) count = 3;
@@ -596,7 +596,7 @@
                 });
                 area.appendChild(row);
             } else {
-                // 渲染 SVG 五線譜全音符（線上音符顯示穿透直線）
+                // 渲染 SVG 五線譜全音符
                 const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
                 svg.setAttribute('viewBox', '0 0 520 180');
                 svg.setAttribute('class', 'staff-svg');
@@ -613,18 +613,19 @@
                     svg.appendChild(line);
                 }
 
-                // 高音譜號
+                // 高音譜號：放大 50% (font-size: 125)，並將螺旋中心精確定位在第二線 (G 線, y=100)
                 const clef = document.createElementNS("http://www.w3.org/2000/svg", "text");
-                clef.setAttribute('x', '26');
-                clef.setAttribute('y', '118');
-                clef.setAttribute('font-size', '82');
-                clef.setAttribute('fill', '#333');
+                clef.setAttribute('x', '24');
+                clef.setAttribute('y', '116');
+                clef.setAttribute('font-size', '125');
+                clef.setAttribute('fill', '#222');
+                clef.setAttribute('style', 'user-select: none;');
                 clef.textContent = '𝄞';
                 svg.appendChild(clef);
 
                 // 計算音符水平與垂直分佈
                 const noteCount = q.notes.length;
-                const startX = 140;
+                const startX = 145;
                 const spacing = (490 - startX - 30) / Math.max(1, noteCount - 1);
 
                 q.notes.forEach((item, i) => {
@@ -644,13 +645,13 @@
                         svg.appendChild(ledger);
                     }
 
-                    // 全音符：fill="none" 確保線上音符能清楚看到線穿透符心
+                    // 全音符：透明空心，確保線上音符能穿心顯示
                     const wholeNote = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
                     wholeNote.setAttribute('cx', cx);
                     wholeNote.setAttribute('cy', cy);
                     wholeNote.setAttribute('rx', '13.5');
                     wholeNote.setAttribute('ry', '8.5');
-                    wholeNote.setAttribute('fill', 'none'); // 透明空心，譜線自然穿過
+                    wholeNote.setAttribute('fill', 'none');
                     wholeNote.setAttribute('stroke', '#1a1a1a');
                     wholeNote.setAttribute('stroke-width', '3.5');
                     wholeNote.setAttribute('transform', `rotate(-15 ${cx} ${cy})`);
