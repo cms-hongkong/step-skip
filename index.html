@@ -7,8 +7,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-bg: #f0f2f5;
-            --card-bg: rgba(255, 255, 255, 0.96);
             --stepwise-color: #4facfe;
             --skipwise-color: #f093fb;
             --accent-color: #ffed4b;
@@ -32,9 +30,9 @@
         }
 
         .game-container {
-            max-width: 800px;
+            max-width: 760px;
             width: 100%;
-            background: var(--card-bg);
+            background: rgba(255, 255, 255, 0.96);
             border-radius: 40px;
             padding: 30px;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
@@ -50,35 +48,122 @@
             border-radius: 30px;
             color: white;
             box-shadow: 0 10px 20px rgba(118, 75, 162, 0.3);
-            position: relative;
         }
 
         h1 {
-            font-size: 2.3rem;
-            margin-bottom: 5px;
+            font-size: 2.2rem;
+            margin-bottom: 6px;
             letter-spacing: 2px;
         }
 
+        /* 介面區塊切換 */
+        .view-panel {
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+        .view-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 首頁登入面板 */
+        .home-card {
+            background: #f8f9fa;
+            border-radius: 30px;
+            padding: 35px 25px;
+            text-align: center;
+            border: 3px dashed #ddd;
+        }
+
+        .input-box {
+            max-width: 380px;
+            margin: 20px auto;
+            text-align: left;
+        }
+
+        .input-box label {
+            display: block;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .player-input {
+            width: 100%;
+            padding: 14px 20px;
+            border-radius: 20px;
+            border: 2px solid #ccc;
+            font-size: 1.2rem;
+            outline: none;
+            transition: all 0.2s;
+            text-align: center;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .player-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-main {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 380px;
+            padding: 16px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.25rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-start {
+            background: #ffed4b;
+            color: #333;
+            box-shadow: 0 5px 0 #d4c43b;
+        }
+        .btn-start:hover { filter: brightness(1.05); }
+        .btn-start:active { transform: translateY(3px); box-shadow: 0 2px 0 #d4c43b; }
+
+        .btn-secondary {
+            background: #fff;
+            color: #666;
+            border: 2px solid #eee;
+            box-shadow: 0 4px 0 #ddd;
+        }
+        .btn-secondary:active { transform: translateY(2px); box-shadow: 0 2px 0 #ddd; }
+
+        /* 遊戲進行面板 */
         .game-info {
             display: flex;
             justify-content: space-around;
             gap: 15px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         .info-box {
             background: #fff;
             border-radius: 20px;
-            padding: 15px;
+            padding: 12px;
             flex: 1;
             text-align: center;
             box-shadow: 0 5px 15px rgba(0,0,0,0.05);
             border-bottom: 4px solid #ddd;
         }
 
-        .label { font-size: 0.9rem; color: #888; font-weight: bold; margin-bottom: 5px; }
+        .label { font-size: 0.85rem; color: #888; font-weight: bold; margin-bottom: 3px; }
         .value { font-size: 1.8rem; font-weight: 900; color: #333; }
-
         .timer-low { color: #ff5e62 !important; animation: blink 0.5s infinite; }
         @keyframes blink { 50% { opacity: 0.5; } }
 
@@ -96,8 +181,8 @@
         }
 
         .note-card {
-            width: 85px;
-            height: 85px;
+            width: 80px;
+            height: 80px;
             border-radius: 20px;
             display: flex;
             flex-direction: column;
@@ -106,8 +191,7 @@
             color: white;
             font-weight: bold;
             box-shadow: 0 8px 0px rgba(0,0,0,0.1);
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            animation: popIn 0.3s ease-out;
+            animation: popIn 0.25s ease-out;
         }
 
         @keyframes popIn {
@@ -115,47 +199,19 @@
             100% { transform: scale(1); opacity: 1; }
         }
 
-        .note-letter { font-size: 2.2rem; }
+        .note-letter { font-size: 2rem; }
         .note-name { font-size: 0.8rem; opacity: 0.9; }
 
-        .controls {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .btn {
-            padding: 18px;
-            border: none;
-            border-radius: 25px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .btn-stepwise { background: linear-gradient(to bottom, #4facfe 0%, #00f2fe 100%); box-shadow: 0 6px 0 #3a8dca; }
-        .btn-skipwise { background: linear-gradient(to bottom, #f093fb 0%, #f5576c 100%); box-shadow: 0 6px 0 #c276ca; }
-        .btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #888; }
-        .btn:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
-
         .feedback {
-            height: 45px;
-            margin: 10px 0;
+            height: 40px;
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             font-weight: bold;
-            border-radius: 15px;
-            transition: all 0.3s;
+            transition: all 0.2s;
         }
-
         .correct { color: #4cd137; transform: scale(1.05); }
         .incorrect { color: #e84118; animation: shake 0.3s; }
 
@@ -165,140 +221,69 @@
             75% { transform: translateX(8px); }
         }
 
-        /* 模態框與排行榜樣式 */
-        .modal {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            padding: 20px;
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
         }
 
-        .modal-content {
-            background: white;
-            color: #333;
-            padding: 30px;
-            border-radius: 35px;
-            max-width: 460px;
-            width: 100%;
-            text-align: center;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .input-group {
-            margin: 20px 0;
-            text-align: left;
-        }
-
-        .input-group label {
-            display: block;
-            font-size: 0.95rem;
-            color: #666;
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
-
-        .player-input {
-            width: 100%;
-            padding: 14px 20px;
-            border-radius: 20px;
-            border: 2px solid #ddd;
-            font-size: 1.1rem;
-            outline: none;
-            transition: 0.3s;
-        }
-
-        .player-input:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 10px rgba(102, 126, 234, 0.2);
-        }
-
-        .action-btn {
-            width: 100%;
-            margin-top: 12px;
-            padding: 14px 20px;
-            background: #ffed4b;
-            color: #333;
+        .btn-choice {
+            padding: 18px;
             border: none;
             border-radius: 25px;
-            font-size: 1.1rem;
+            font-size: 1.25rem;
             font-weight: bold;
             cursor: pointer;
-            transition: 0.2s;
-            box-shadow: 0 4px 0 #d4c43b;
+            transition: all 0.2s;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
-        .action-btn:hover { filter: brightness(1.05); }
-        .action-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #d4c43b; }
-        
-        .secondary-btn {
-            background: #f0f2f5;
-            color: #666;
-            box-shadow: 0 4px 0 #ccc;
-        }
+        .btn-stepwise { background: linear-gradient(to bottom, #4facfe 0%, #00f2fe 100%); box-shadow: 0 6px 0 #3a8dca; }
+        .btn-skipwise { background: linear-gradient(to bottom, #f093fb 0%, #f5576c 100%); box-shadow: 0 6px 0 #c276ca; }
+        .btn-choice:active { transform: translateY(4px); box-shadow: 0 2px 0 #888; }
 
+        /* 排行榜表格面板 */
         .leaderboard-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
+            margin: 20px 0;
             font-size: 0.95rem;
         }
 
         .leaderboard-table th, .leaderboard-table td {
-            padding: 10px 8px;
+            padding: 12px 8px;
             text-align: center;
         }
 
         .leaderboard-table th {
-            color: #888;
-            border-bottom: 2px solid #eee;
+            color: #777;
+            border-bottom: 2px solid #ddd;
         }
 
         .leaderboard-table tr:not(:last-child) td {
-            border-bottom: 1px solid #f2f2f2;
+            border-bottom: 1px solid #eee;
         }
 
         .rank-badge {
             font-weight: bold;
             display: inline-block;
-            width: 24px;
-            height: 24px;
-            line-height: 24px;
+            width: 26px;
+            height: 26px;
+            line-height: 26px;
             border-radius: 50%;
         }
         .rank-1 { background: #ffd700; color: #fff; }
         .rank-2 { background: #c0c0c0; color: #fff; }
         .rank-3 { background: #cd7f32; color: #fff; }
 
-        .current-player-row {
-            background: #eef2ff;
-            font-weight: bold;
-            border-radius: 10px;
-        }
-
-        .header-actions {
-            margin-top: 10px;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .header-btn {
-            background: rgba(255, 255, 255, 0.25);
-            border: none;
-            color: white;
-            padding: 6px 14px;
-            border-radius: 15px;
-            font-size: 0.85rem;
-            cursor: pointer;
+        .current-record {
+            background: #f1f4ff;
             font-weight: bold;
         }
-        .header-btn:hover { background: rgba(255, 255, 255, 0.4); }
     </style>
 </head>
 <body>
@@ -306,72 +291,351 @@
     <div class="game-container">
         <header>
             <h1>🎶 旋律大挑戰</h1>
-            <p id="playerGreeting">請先設定暱稱開始遊戲</p>
-            <div class="header-actions">
-                <button class="header-btn" onclick="openStartModal()"><i class="fas fa-user-edit"></i> 更改玩家</button>
-                <button class="header-btn" onclick="openLeaderboardModal()"><i class="fas fa-trophy"></i> 排行榜</button>
-            </div>
+            <p id="subTitle">60 秒限時衝刺：你能辨識多少旋律？</p>
         </header>
 
-        <div class="game-info">
-            <div class="info-box">
-                <div class="label">剩餘時間</div>
-                <div class="value" id="timer">60s</div>
-            </div>
-            <div class="info-box">
-                <div class="label">目前分數</div>
-                <div class="value" id="score">0</div>
-            </div>
-            <div class="info-box">
-                <div class="label">最高連勝</div>
-                <div class="value" id="streak">0</div>
+        <!-- 視圖 1：首頁輸入名字面板 -->
+        <div id="homeView" class="view-panel active">
+            <div class="home-card">
+                <h2 style="font-size: 1.6rem; color: #333; margin-bottom: 5px;">🎮 準備挑戰</h2>
+                <p style="color: #666; font-size: 0.95rem;">分辨音符是連續階梯（級進）還是跨音跳躍（跳進）</p>
+
+                <div class="input-box">
+                    <label for="playerNameInput">你的名字 / 暱稱：</label>
+                    <input type="text" id="playerNameInput" class="player-input" maxlength="12" placeholder="請在此輸入名字" value="音樂小達人">
+                </div>
+
+                <button class="btn-main btn-start" onclick="onStartClick()">
+                    開始衝刺挑戰 <i class="fas fa-play"></i>
+                </button>
+                <button class="btn-main btn-secondary" onclick="showLeaderboardView()">
+                    查看榮譽排行榜 <i class="fas fa-trophy"></i>
+                </button>
             </div>
         </div>
 
-        <div class="melody-display" id="melodyArea"></div>
+        <!-- 視圖 2：遊戲進行中面板 -->
+        <div id="gameView" class="view-panel">
+            <div class="game-info">
+                <div class="info-box">
+                    <div class="label">剩餘時間</div>
+                    <div class="value" id="timer">60s</div>
+                </div>
+                <div class="info-box">
+                    <div class="label">目前得分</div>
+                    <div class="value" id="score">0</div>
+                </div>
+                <div class="info-box">
+                    <div class="label">最高連勝</div>
+                    <div class="value" id="streak">0</div>
+                </div>
+            </div>
 
-        <div class="feedback" id="feedback">請點擊下方按鈕或鍵盤快捷鍵作答</div>
+            <div class="melody-display" id="melodyArea"></div>
 
-        <div class="controls">
-            <button class="btn btn-stepwise" onclick="checkAnswer('stepwise')" id="btnStep">
-                <i class="fas fa-stairs"></i> 級進 (←)
-            </button>
-            <button class="btn btn-skipwise" onclick="checkAnswer('skipwise')" id="btnSkip">
-                <i class="fas fa-rabbit-hop"></i> 跳進 (→)
-            </button>
+            <div class="feedback" id="feedback">請點擊按鈕或鍵盤作答</div>
+
+            <div class="controls">
+                <button class="btn-choice btn-stepwise" onclick="checkAnswer('stepwise')" id="btnStep">
+                    <i class="fas fa-stairs"></i> 級進 (←)
+                </button>
+                <button class="btn-choice btn-skipwise" onclick="checkAnswer('skipwise')" id="btnSkip">
+                    <i class="fas fa-rabbit-hop"></i> 跳進 (→)
+                </button>
+            </div>
+        </div>
+
+        <!-- 視圖 3：排行榜與結算面板 -->
+        <div id="boardView" class="view-panel">
+            <div class="home-card" style="padding: 25px 15px;">
+                <h2 id="boardTitle" style="font-size: 1.8rem; color: #333;">🏆 榮譽排行榜</h2>
+                <div id="latestScoreMsg" style="display: none; margin: 10px 0; color: #764ba2; font-size: 1.2rem; font-weight: bold;"></div>
+
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>名次</th>
+                            <th>玩家</th>
+                            <th>得分</th>
+                            <th>最高連勝</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardBody"></tbody>
+                </table>
+
+                <button class="btn-main btn-start" onclick="returnToGame()">
+                    再玩一局 <i class="fas fa-redo"></i>
+                </button>
+                <button class="btn-main btn-secondary" onclick="showHomeView()">
+                    返回更換名字 <i class="fas fa-user-edit"></i>
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- 起始 / 名字輸入視窗 -->
-    <div id="startModal" class="modal">
-        <div class="modal-content">
-            <h2 style="font-size: 1.8rem; margin-bottom: 10px;">👋 歡迎加入衝刺！</h2>
-            <p style="color: #666; font-size: 0.95rem;">在 60 秒內辨識旋律是連續階梯（級進）還是跨音跳躍（跳進）</p>
-            
-            <div class="input-group">
-                <label for="playerNameInput">玩家暱稱：</label>
-                <input type="text" id="playerNameInput" class="player-input" maxlength="10" placeholder="例如：莫札特" value="旋律新手">
-            </div>
+    <script>
+        // 音頻合成（Web Audio API）
+        const noteFrequencies = {
+            'C': 261.63, 'D': 293.66, 'E': 329.63,
+            'F': 349.23, 'G': 392.00, 'A': 440.00, 'B': 493.88
+        };
+        let audioCtx = null;
 
-            <button class="action-btn" onclick="confirmNameAndStart()">開始衝刺 🚀</button>
-            <button class="action-btn secondary-btn" onclick="openLeaderboardModal()">查看排行榜 🏆</button>
-        </div>
-    </div>
+        function playTone(freq, duration = 0.22, delay = 0) {
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
 
-    <!-- 遊戲結束視窗 -->
-    <div id="gameOverModal" class="modal">
-        <div class="modal-content">
-            <h2 style="font-size: 2.2rem; margin-bottom: 10px;">⏰ 時間到！</h2>
-            <p style="font-size: 1.1rem; color: #666;"><span id="resultPlayerName"></span> 的成績</p>
-            <div style="font-size: 3.8rem; font-weight: 900; color: #764ba2; margin: 5px 0;" id="finalScore">0</div>
-            <p id="finalStats" style="margin-bottom: 15px; color: #555;"></p>
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
 
-            <button class="action-btn" onclick="restartCurrentPlayer()">再次挑戰 <i class="fas fa-redo"></i></button>
-            <button class="action-btn secondary-btn" onclick="openLeaderboardModal()">查看完整排行榜 <i class="fas fa-trophy"></i></button>
-        </div>
-    </div>
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime + delay);
 
-    <!-- 排行榜視窗 -->
-    <div id="leaderboardModal" class="modal">
-        <div class="modal-content">
-            <h2 style="font-size: 1.8rem; margin-
+                gain.gain.setValueAtTime(0, audioCtx.currentTime + delay);
+                gain.gain.linearRampToValueAtTime(0.25, audioCtx.currentTime + delay + 0.04);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + delay + duration);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                osc.start(audioCtx.currentTime + delay);
+                osc.stop(audioCtx.currentTime + delay + duration);
+            } catch(e) {}
+        }
+
+        // 題目庫
+        const melodies = [
+            { notes: ['C', 'D', 'E', 'F'], type: 'stepwise' },
+            { notes: ['G', 'E', 'C', 'G'], type: 'skipwise' },
+            { notes: ['E', 'F', 'G', 'A'], type: 'stepwise' },
+            { notes: ['A', 'F', 'D', 'B'], type: 'skipwise' },
+            { notes: ['B', 'A', 'G', 'F'], type: 'stepwise' },
+            { notes: ['C', 'E', 'G', 'B'], type: 'skipwise' },
+            { notes: ['D', 'E', 'D', 'C'], type: 'stepwise' },
+            { notes: ['F', 'A', 'C', 'F'], type: 'skipwise' },
+            { notes: ['G', 'F', 'E', 'D'], type: 'stepwise' },
+            { notes: ['C', 'F', 'A', 'D'], type: 'skipwise' },
+            { notes: ['A', 'B', 'C', 'D'], type: 'stepwise' },
+            { notes: ['D', 'G', 'B', 'E'], type: 'skipwise' }
+        ];
+
+        const colors = {
+            'C': '#FF6B6B', 'D': '#FF9E2C', 'E': '#FFD93D', 
+            'F': '#6BCB77', 'G': '#4D96FF', 'A': '#9B59B6', 'B': '#F06292'
+        };
+
+        const noteNames = { 'C':'Do', 'D':'Re', 'E':'Mi', 'F':'Fa', 'G':'Sol', 'A':'La', 'B':'Si' };
+
+        // 遊戲狀態
+        let currentPlayer = "音樂小達人";
+        let score = 0;
+        let streak = 0;
+        let maxStreak = 0;
+        let timeLeft = 60;
+        let timerId = null;
+        let currentMelody = null;
+        let isGaming = false;
+        let lastMelodyIndex = -1;
+
+        // 面板切換控制
+        function switchView(viewId) {
+            document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+        }
+
+        function showHomeView() {
+            if (timerId) clearInterval(timerId);
+            isGaming = false;
+            document.getElementById('subTitle').textContent = "60 秒限時衝刺：你能辨識多少旋律？";
+            switchView('homeView');
+        }
+
+        function onStartClick() {
+            const inputName = document.getElementById('playerNameInput').value.trim();
+            if (inputName) currentPlayer = inputName;
+            startRound();
+        }
+
+        function returnToGame() {
+            startRound();
+        }
+
+        function startRound() {
+            score = 0;
+            streak = 0;
+            maxStreak = 0;
+            timeLeft = 60;
+            isGaming = true;
+            lastMelodyIndex = -1;
+
+            document.getElementById('subTitle').textContent = `挑戰者：${currentPlayer}！加油！`;
+            document.getElementById('score').textContent = "0";
+            document.getElementById('streak').textContent = "0";
+            document.getElementById('feedback').textContent = "請判斷題目是級進還是跳進！";
+            document.getElementById('feedback').className = "feedback";
+
+            switchView('gameView');
+            nextQuestion();
+            startTimer();
+        }
+
+        function startTimer() {
+            if (timerId) clearInterval(timerId);
+            const timerEl = document.getElementById('timer');
+            timerEl.textContent = timeLeft + 's';
+            timerEl.classList.remove('timer-low');
+
+            timerId = setInterval(() => {
+                timeLeft--;
+                timerEl.textContent = timeLeft + 's';
+
+                if (timeLeft <= 10) timerEl.classList.add('timer-low');
+                else timerEl.classList.remove('timer-low');
+
+                if (timeLeft <= 0) endGame();
+            }, 1000);
+        }
+
+        function nextQuestion() {
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * melodies.length);
+            } while (randomIndex === lastMelodyIndex && melodies.length > 1);
+
+            lastMelodyIndex = randomIndex;
+            currentMelody = melodies[randomIndex];
+
+            const area = document.getElementById('melodyArea');
+            area.innerHTML = '';
+
+            currentMelody.notes.forEach((note, index) => {
+                const card = document.createElement('div');
+                card.className = 'note-card';
+                card.style.backgroundColor = colors[note];
+                card.style.animationDelay = (index * 0.05) + 's';
+                card.innerHTML = `
+                    <div class="note-letter">${note}</div>
+                    <div class="note-name">${noteNames[note]}</div>
+                `;
+                area.appendChild(card);
+
+                // 播放音效
+                if (noteFrequencies[note]) {
+                    playTone(noteFrequencies[note], 0.22, index * 0.12);
+                }
+            });
+        }
+
+        function checkAnswer(choice) {
+            if (!isGaming) return;
+
+            const feedback = document.getElementById('feedback');
+            if (choice === currentMelody.type) {
+                score += (10 + streak * 2);
+                streak++;
+                if (streak > maxStreak) maxStreak = streak;
+                feedback.textContent = `✨ 太棒了！連勝中：${streak}`;
+                feedback.className = "feedback correct";
+            } else {
+                streak = 0;
+                feedback.textContent = "😅 答錯了，連勝中斷！";
+                feedback.className = "feedback incorrect";
+            }
+
+            document.getElementById('score').textContent = score;
+            document.getElementById('streak').textContent = maxStreak;
+
+            setTimeout(nextQuestion, 160);
+        }
+
+        function endGame() {
+            isGaming = false;
+            clearInterval(timerId);
+
+            // 儲存排行榜
+            saveScore(currentPlayer, score, maxStreak);
+
+            // 顯示結算
+            const latestMsg = document.getElementById('latestScoreMsg');
+            latestMsg.style.display = 'block';
+            latestMsg.textContent = `⏰ 時間到！${currentPlayer} 本局得分：${score} 分 (最高連勝：${maxStreak})`;
+
+            document.getElementById('boardTitle').textContent = "⏰ 時間到！英雄榜";
+            renderBoard();
+            switchView('boardView');
+        }
+
+        // 排行榜機制
+        const STORAGE_KEY = 'melody_game_ranks_v2';
+
+        function getLeaderboard() {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            return raw ? JSON.parse(raw) : [];
+        }
+
+        function saveScore(name, finalScore, finalStreak) {
+            let board = getLeaderboard();
+            board.push({
+                name: name || '挑戰者',
+                score: finalScore,
+                streak: finalStreak
+            });
+            board.sort((a, b) => b.score !== a.score ? b.score - a.score : b.streak - a.streak);
+            board = board.slice(0, 10);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(board));
+        }
+
+        function renderBoard() {
+            const list = getLeaderboard();
+            const tbody = document.getElementById('leaderboardBody');
+            tbody.innerHTML = '';
+
+            if (list.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="color:#aaa; padding:20px;">尚無排行榜紀錄，快成為第一位登榜者！</td></tr>';
+                return;
+            }
+
+            list.forEach((item, idx) => {
+                const tr = document.createElement('tr');
+                const badge = idx < 3 ? `rank-${idx+1}` : '';
+                tr.innerHTML = `
+                    <td><span class="rank-badge ${badge}">${idx + 1}</span></td>
+                    <td style="font-weight: bold;">${escapeHtml(item.name)}</td>
+                    <td style="color: #764ba2; font-weight: 900; font-size: 1.1rem;">${item.score}</td>
+                    <td>${item.streak} 連勝</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function showLeaderboardView() {
+            document.getElementById('boardTitle').textContent = "🏆 榮譽排行榜";
+            document.getElementById('latestScoreMsg').style.display = 'none';
+            renderBoard();
+            switchView('boardView');
+        }
+
+        function escapeHtml(str) {
+            return String(str).replace(/[&<>'"]/g, tag => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+            }[tag] || tag));
+        }
+
+        // 鍵盤支援（支援 Enter 快速開局，左右箭頭作答）
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && document.getElementById('homeView').classList.contains('active')) {
+                onStartClick();
+                return;
+            }
+
+            if (!isGaming) return;
+            if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+                checkAnswer('stepwise');
+            } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+                checkAnswer('skipwise');
+            }
+        });
+    </script>
+</body>
+</html>
