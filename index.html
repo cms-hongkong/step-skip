@@ -8,7 +8,7 @@
     <style>
         :root {
             --primary-bg: #f0f2f5;
-            --card-bg: rgba(255, 255, 255, 0.95);
+            --card-bg: rgba(255, 255, 255, 0.96);
             --stepwise-color: #4facfe;
             --skipwise-color: #f093fb;
             --accent-color: #ffed4b;
@@ -50,10 +50,11 @@
             border-radius: 30px;
             color: white;
             box-shadow: 0 10px 20px rgba(118, 75, 162, 0.3);
+            position: relative;
         }
 
         h1 {
-            font-size: 2.5rem;
+            font-size: 2.3rem;
             margin-bottom: 5px;
             letter-spacing: 2px;
         }
@@ -84,11 +85,12 @@
         .melody-display {
             display: flex;
             justify-content: center;
+            align-items: center;
             gap: 15px;
-            padding: 40px 20px;
+            padding: 30px 20px;
             background: #f8f9fa;
             border-radius: 30px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             min-height: 160px;
             border: 3px dashed #ddd;
         }
@@ -105,7 +107,6 @@
             font-weight: bold;
             box-shadow: 0 8px 0px rgba(0,0,0,0.1);
             transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
             animation: popIn 0.3s ease-out;
         }
 
@@ -124,10 +125,10 @@
         }
 
         .btn {
-            padding: 20px;
+            padding: 18px;
             border: none;
             border-radius: 25px;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.2s;
@@ -143,7 +144,29 @@
         .btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #888; }
         .btn:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
 
-        #gameOverModal {
+        .feedback {
+            height: 45px;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 15px;
+            transition: all 0.3s;
+        }
+
+        .correct { color: #4cd137; transform: scale(1.05); }
+        .incorrect { color: #e84118; animation: shake 0.3s; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        /* 模態框與排行榜樣式 */
+        .modal {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.85);
@@ -152,51 +175,130 @@
             justify-content: center;
             align-items: center;
             z-index: 100;
-            color: white;
-            text-align: center;
+            padding: 20px;
         }
 
         .modal-content {
             background: white;
             color: #333;
-            padding: 40px;
-            border-radius: 40px;
-            max-width: 400px;
-            width: 90%;
+            padding: 30px;
+            border-radius: 35px;
+            max-width: 460px;
+            width: 100%;
+            text-align: center;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
-        .restart-btn {
-            margin-top: 20px;
-            padding: 15px 40px;
+        .input-group {
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.95rem;
+            color: #666;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .player-input {
+            width: 100%;
+            padding: 14px 20px;
+            border-radius: 20px;
+            border: 2px solid #ddd;
+            font-size: 1.1rem;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .player-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.2);
+        }
+
+        .action-btn {
+            width: 100%;
+            margin-top: 12px;
+            padding: 14px 20px;
             background: #ffed4b;
             color: #333;
             border: none;
-            border-radius: 30px;
-            font-size: 1.2rem;
+            border-radius: 25px;
+            font-size: 1.1rem;
             font-weight: bold;
             cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 4px 0 #d4c43b;
         }
 
-        .feedback {
-            height: 60px;
-            margin: 15px 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
+        .action-btn:hover { filter: brightness(1.05); }
+        .action-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #d4c43b; }
+        
+        .secondary-btn {
+            background: #f0f2f5;
+            color: #666;
+            box-shadow: 0 4px 0 #ccc;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 0.95rem;
+        }
+
+        .leaderboard-table th, .leaderboard-table td {
+            padding: 10px 8px;
+            text-align: center;
+        }
+
+        .leaderboard-table th {
+            color: #888;
+            border-bottom: 2px solid #eee;
+        }
+
+        .leaderboard-table tr:not(:last-child) td {
+            border-bottom: 1px solid #f2f2f2;
+        }
+
+        .rank-badge {
             font-weight: bold;
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            line-height: 24px;
+            border-radius: 50%;
+        }
+        .rank-1 { background: #ffd700; color: #fff; }
+        .rank-2 { background: #c0c0c0; color: #fff; }
+        .rank-3 { background: #cd7f32; color: #fff; }
+
+        .current-player-row {
+            background: #eef2ff;
+            font-weight: bold;
+            border-radius: 10px;
+        }
+
+        .header-actions {
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .header-btn {
+            background: rgba(255, 255, 255, 0.25);
+            border: none;
+            color: white;
+            padding: 6px 14px;
             border-radius: 15px;
-            transition: all 0.3s;
+            font-size: 0.85rem;
+            cursor: pointer;
+            font-weight: bold;
         }
-
-        .correct { color: #4cd137; transform: scale(1.1); }
-        .incorrect { color: #e84118; animation: shake 0.3s; }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-        }
+        .header-btn:hover { background: rgba(255, 255, 255, 0.4); }
     </style>
 </head>
 <body>
@@ -204,7 +306,11 @@
     <div class="game-container">
         <header>
             <h1>🎶 旋律大挑戰</h1>
-            <p>1 分鐘限時衝刺！你能拿幾分？</p>
+            <p id="playerGreeting">請先設定暱稱開始遊戲</p>
+            <div class="header-actions">
+                <button class="header-btn" onclick="openStartModal()"><i class="fas fa-user-edit"></i> 更改玩家</button>
+                <button class="header-btn" onclick="openLeaderboardModal()"><i class="fas fa-trophy"></i> 排行榜</button>
+            </div>
         </header>
 
         <div class="game-info">
@@ -224,155 +330,48 @@
 
         <div class="melody-display" id="melodyArea"></div>
 
-        <div class="feedback" id="feedback">準備好了嗎？</div>
+        <div class="feedback" id="feedback">請點擊下方按鈕或鍵盤快捷鍵作答</div>
 
         <div class="controls">
             <button class="btn btn-stepwise" onclick="checkAnswer('stepwise')" id="btnStep">
-                <i class="fas fa-stairs"></i> 級進
+                <i class="fas fa-stairs"></i> 級進 (←)
             </button>
             <button class="btn btn-skipwise" onclick="checkAnswer('skipwise')" id="btnSkip">
-                <i class="fas fa-rabbit-hop"></i> 跳進
+                <i class="fas fa-rabbit-hop"></i> 跳進 (→)
             </button>
         </div>
     </div>
 
-    <div id="gameOverModal">
+    <!-- 起始 / 名字輸入視窗 -->
+    <div id="startModal" class="modal">
         <div class="modal-content">
-            <h2 style="font-size: 2.5rem; margin-bottom: 20px;">⏰ 時間到！</h2>
-            <p style="font-size: 1.2rem;">你的最終得分</p>
-            <div style="font-size: 4rem; font-weight: 900; color: #764ba2;" id="finalScore">0</div>
-            <p id="finalStats" style="margin-bottom: 10px;"></p>
-            <button class="restart-btn" onclick="resetGame()">再次挑戰 <i class="fas fa-redo"></i></button>
+            <h2 style="font-size: 1.8rem; margin-bottom: 10px;">👋 歡迎加入衝刺！</h2>
+            <p style="color: #666; font-size: 0.95rem;">在 60 秒內辨識旋律是連續階梯（級進）還是跨音跳躍（跳進）</p>
+            
+            <div class="input-group">
+                <label for="playerNameInput">玩家暱稱：</label>
+                <input type="text" id="playerNameInput" class="player-input" maxlength="10" placeholder="例如：莫札特" value="旋律新手">
+            </div>
+
+            <button class="action-btn" onclick="confirmNameAndStart()">開始衝刺 🚀</button>
+            <button class="action-btn secondary-btn" onclick="openLeaderboardModal()">查看排行榜 🏆</button>
         </div>
     </div>
 
-    <script>
-        const melodies = [
-            { notes: ['C', 'D', 'E', 'F'], type: 'stepwise' },
-            { notes: ['G', 'E', 'C', 'G'], type: 'skipwise' },
-            { notes: ['E', 'F', 'G', 'A'], type: 'stepwise' },
-            { notes: ['A', 'F', 'D', 'B'], type: 'skipwise' },
-            { notes: ['B', 'A', 'G', 'F'], type: 'stepwise' },
-            { notes: ['C', 'E', 'G', 'B'], type: 'skipwise' },
-            { notes: ['D', 'E', 'D', 'C'], type: 'stepwise' },
-            { notes: ['F', 'A', 'C', 'F'], type: 'skipwise' }
-        ];
+    <!-- 遊戲結束視窗 -->
+    <div id="gameOverModal" class="modal">
+        <div class="modal-content">
+            <h2 style="font-size: 2.2rem; margin-bottom: 10px;">⏰ 時間到！</h2>
+            <p style="font-size: 1.1rem; color: #666;"><span id="resultPlayerName"></span> 的成績</p>
+            <div style="font-size: 3.8rem; font-weight: 900; color: #764ba2; margin: 5px 0;" id="finalScore">0</div>
+            <p id="finalStats" style="margin-bottom: 15px; color: #555;"></p>
 
-        const colors = {
-            'C': '#FF6B6B', 'D': '#FF9E2C', 'E': '#FFD93D', 
-            'F': '#6BCB77', 'G': '#4D96FF', 'A': '#9B59B6', 'B': '#F06292'
-        };
+            <button class="action-btn" onclick="restartCurrentPlayer()">再次挑戰 <i class="fas fa-redo"></i></button>
+            <button class="action-btn secondary-btn" onclick="openLeaderboardModal()">查看完整排行榜 <i class="fas fa-trophy"></i></button>
+        </div>
+    </div>
 
-        const noteNames = { 'C':'Do', 'D':'Re', 'E':'Mi', 'F':'Fa', 'G':'Sol', 'A':'La', 'B':'Si' };
-
-        let score = 0;
-        let streak = 0;
-        let maxStreak = 0;
-        let timeLeft = 60;
-        let timerId = null;
-        let currentMelody = null;
-        let gameActive = false;
-        
-        // 關鍵：用來記錄上一次題目的索引，防止連續重複
-        let lastMelodyIndex = -1;
-
-        function startGame() {
-            score = 0;
-            streak = 0;
-            maxStreak = 0;
-            timeLeft = 60;
-            gameActive = true;
-            lastMelodyIndex = -1; // 重置紀錄
-            
-            document.getElementById('score').textContent = score;
-            document.getElementById('streak').textContent = streak;
-            document.getElementById('feedback').textContent = "開始挑戰！";
-            document.getElementById('feedback').className = "feedback";
-            document.getElementById('gameOverModal').style.display = 'none';
-            
-            nextQuestion();
-            startTimer();
-        }
-
-        function startTimer() {
-            if(timerId) clearInterval(timerId);
-            timerId = setInterval(() => {
-                timeLeft--;
-                const timerEl = document.getElementById('timer');
-                timerEl.textContent = timeLeft + 's';
-                
-                if(timeLeft <= 10) timerEl.classList.add('timer-low');
-                else timerEl.classList.remove('timer-low');
-
-                if (timeLeft <= 0) endGame();
-            }, 1000);
-        }
-
-        function nextQuestion() {
-            let randomIndex;
-            
-            // 隨機抽取，直到抽到跟上次不一樣的題目索引
-            do {
-                randomIndex = Math.floor(Math.random() * melodies.length);
-            } while (randomIndex === lastMelodyIndex && melodies.length > 1);
-
-            lastMelodyIndex = randomIndex;
-            currentMelody = melodies[randomIndex];
-
-            const area = document.getElementById('melodyArea');
-            area.innerHTML = '';
-
-            currentMelody.notes.forEach((note, index) => {
-                const card = document.createElement('div');
-                card.className = 'note-card';
-                card.style.backgroundColor = colors[note];
-                card.style.animationDelay = (index * 0.05) + 's'; // 增加一點點依序出現的感覺
-                card.innerHTML = `
-                    <div class="note-letter">${note}</div>
-                    <div class="note-name">${noteNames[note]}</div>
-                `;
-                area.appendChild(card);
-            });
-        }
-
-        function checkAnswer(choice) {
-            if(!gameActive) return;
-
-            const feedback = document.getElementById('feedback');
-            if (choice === currentMelody.type) {
-                // 分數計算：連勝越多加分越多
-                score += (10 + streak * 2);
-                streak++;
-                if(streak > maxStreak) maxStreak = streak;
-                feedback.textContent = `✨ 太棒了！連勝中：${streak}`;
-                feedback.className = "feedback correct";
-            } else {
-                streak = 0;
-                feedback.textContent = "😅 沒關係，再試一次！";
-                feedback.className = "feedback incorrect";
-            }
-
-            document.getElementById('score').textContent = score;
-            document.getElementById('streak').textContent = maxStreak;
-            
-            // 稍微延遲一下再換題，讓玩家看清楚反饋
-            setTimeout(nextQuestion, 200); 
-        }
-
-        function endGame() {
-            gameActive = false;
-            clearInterval(timerId);
-            document.getElementById('gameOverModal').style.display = 'flex';
-            document.getElementById('finalScore').textContent = score;
-            document.getElementById('finalStats').textContent = `最高連勝紀錄：${maxStreak}`;
-        }
-
-        function resetGame() {
-            startGame();
-        }
-
-        // 當頁面載入後自動開始
-        window.onload = startGame;
-    </script>
-</body>
-</html>
+    <!-- 排行榜視窗 -->
+    <div id="leaderboardModal" class="modal">
+        <div class="modal-content">
+            <h2 style="font-size: 1.8rem; margin-
