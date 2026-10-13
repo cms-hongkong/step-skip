@@ -191,7 +191,7 @@
         .timer-low { color: #ff5e62 !important; animation: blink 0.5s infinite; }
         @keyframes blink { 50% { opacity: 0.5; } }
 
-        /* 題目顯示區域（音名卡片 or 五線譜） */
+        /* 題目顯示區域 */
         .stage-area {
             background: #f8f9fa;
             border-radius: 25px;
@@ -209,11 +209,11 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 12px;
+            gap: 15px;
         }
         .note-card {
-            width: 75px;
-            height: 80px;
+            width: 80px;
+            height: 85px;
             border-radius: 18px;
             display: flex;
             flex-direction: column;
@@ -228,8 +228,8 @@
             0% { transform: scale(0.3); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
         }
-        .note-letter { font-size: 1.8rem; }
-        .note-name { font-size: 0.8rem; opacity: 0.95; }
+        .note-letter { font-size: 1.9rem; }
+        .note-name { font-size: 0.85rem; opacity: 0.95; }
 
         /* 五線譜容器 */
         .staff-svg {
@@ -330,7 +330,7 @@
                     <input type="text" id="playerNameInput" class="player-input" maxlength="10" value="音樂小達人">
                 </div>
 
-                <div style="font-weight: bold; color: #666; margin-top: 15px;">請選擇訓練關卡 (Level 1 ~ 6)：</div>
+                <div style="font-weight: bold; color: #666; margin-top: 15px;">請選擇訓練關卡 (八度範圍內)：</div>
                 <div class="level-grid" id="levelContainer">
                     <div class="level-card selected" onclick="selectLevel(1)">
                         <div class="level-badge">Lv.1</div>
@@ -338,23 +338,23 @@
                     </div>
                     <div class="level-card" onclick="selectLevel(2)">
                         <div class="level-badge">Lv.2</div>
-                        <div><b>2 個音</b> (五線譜符號)</div>
+                        <div><b>2 個音</b> (五線譜全音符)</div>
                     </div>
                     <div class="level-card" onclick="selectLevel(3)">
                         <div class="level-badge">Lv.3</div>
-                        <div><b>3-4 個音</b> (音名 / 唱名)</div>
+                        <div><b>3 個音</b> (音名 / 唱名)</div>
                     </div>
                     <div class="level-card" onclick="selectLevel(4)">
                         <div class="level-badge">Lv.4</div>
-                        <div><b>3-4 個音</b> (五線譜符號)</div>
+                        <div><b>3 個音</b> (五線譜全音符)</div>
                     </div>
                     <div class="level-card" onclick="selectLevel(5)">
                         <div class="level-badge">Lv.5</div>
-                        <div><b>5-6 個音</b> (音名 / 唱名)</div>
+                        <div><b>4 個音</b> (音名 / 唱名)</div>
                     </div>
                     <div class="level-card" onclick="selectLevel(6)">
                         <div class="level-badge">Lv.6</div>
-                        <div><b>5-6 個音</b> (五線譜符號)</div>
+                        <div><b>4 個音</b> (五線譜全音符)</div>
                     </div>
                 </div>
 
@@ -375,7 +375,7 @@
                     <div class="value" id="timer">60s</div>
                 </div>
                 <div class="info-box">
-                    <div class="label">得分</div>
+                    <div class="label">得分 (答錯-5)</div>
                     <div class="value" id="score">0</div>
                 </div>
                 <div class="info-box">
@@ -384,7 +384,7 @@
                 </div>
             </div>
 
-            <!-- 出題區：自動切換卡片或 SVG 五線譜 -->
+            <!-- 出題區：音名卡片或 SVG 五線譜全音符 -->
             <div class="stage-area" id="stageArea"></div>
 
             <div class="feedback" id="feedback">請選擇該段旋律的進行方式：</div>
@@ -437,7 +437,7 @@
     </div>
 
     <script>
-        // 音高階梯定義 (自然音階 C4 ~ G5)
+        // 嚴格限定於 8 度之內的音階（C4 到 C5，共 8 個自然音級）
         const SCALE = [
             { note: 'C', solfege: 'Do', freq: 261.63, pitchIndex: 0 },
             { note: 'D', solfege: 'Re', freq: 293.66, pitchIndex: 1 },
@@ -446,11 +446,7 @@
             { note: 'G', solfege: 'Sol', freq: 392.00, pitchIndex: 4 },
             { note: 'A', solfege: 'La', freq: 440.00, pitchIndex: 5 },
             { note: 'B', solfege: 'Si', freq: 493.88, pitchIndex: 6 },
-            { note: 'C', solfege: 'Do', freq: 523.25, pitchIndex: 7 },
-            { note: 'D', solfege: 'Re', freq: 587.33, pitchIndex: 8 },
-            { note: 'E', solfege: 'Mi', freq: 659.25, pitchIndex: 9 },
-            { note: 'F', solfege: 'Fa', freq: 698.46, pitchIndex: 10 },
-            { note: 'G', solfege: 'Sol', freq: 783.99, pitchIndex: 11 }
+            { note: 'C', solfege: 'Do', freq: 523.25, pitchIndex: 7 } // 高音 Do (C5)
         ];
 
         const NOTE_COLORS = {
@@ -458,7 +454,6 @@
             'F': '#6BCB77', 'G': '#4D96FF', 'A': '#9B59B6', 'B': '#F06292'
         };
 
-        // 5 大種類
         const CATEGORIES = ['repeat', 'stepwise-up', 'skipwise-up', 'stepwise-down', 'skipwise-down'];
 
         // 遊戲狀態
@@ -474,7 +469,7 @@
 
         // 音訊合成 (Web Audio API)
         let audioCtx = null;
-        function playTone(freq, delay = 0, duration = 0.22) {
+        function playTone(freq, delay = 0, duration = 0.28) {
             try {
                 if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -497,7 +492,7 @@
             } catch(e) {}
         }
 
-        // 關卡切換選擇
+        // 關卡切換
         function selectLevel(lvl) {
             currentLevel = lvl;
             const cards = document.querySelectorAll('.level-card');
@@ -517,19 +512,19 @@
             switchView('homeView');
         }
 
-        // 題目生成核心（保證嚴格單一走向，適合 5-6 音）
+        // 題目生成核心：嚴格遵照 2音、3音、4音 規則，且音程維持在 8 度內
         function generateQuestion(level) {
-            // 決定音符數量
+            // 第 4 項規則：Lv 1,2 -> 2 音；Lv 3,4 -> 3 音；Lv 5,6 -> 4 音
             let count = 2;
-            if (level === 3 || level === 4) count = Math.random() < 0.5 ? 3 : 4;
-            if (level === 5 || level === 6) count = Math.random() < 0.5 ? 5 : 6;
+            if (level === 3 || level === 4) count = 3;
+            else if (level === 5 || level === 6) count = 4;
 
             const isStaff = (level % 2 === 0); // 偶數關為五線譜，奇數關為音名
             const type = CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
             let indices = [];
 
             if (type === 'repeat') {
-                const base = Math.floor(Math.random() * 8) + 2;
+                const base = Math.floor(Math.random() * SCALE.length);
                 indices = Array(count).fill(base);
             } else if (type === 'stepwise-up') {
                 const maxStart = SCALE.length - count;
@@ -540,26 +535,38 @@
                 const start = minStart + Math.floor(Math.random() * (SCALE.length - minStart));
                 for (let i = 0; i < count; i++) indices.push(start - i);
             } else if (type === 'skipwise-up') {
-                // 上行跳進（相鄰差值至少 >= 2）
                 let valid = false;
-                while (!valid) {
-                    indices = [Math.floor(Math.random() * 2)];
+                let attempts = 0;
+                while (!valid && attempts < 100) {
+                    attempts++;
+                    const maxStart = count === 4 ? 1 : (count === 3 ? 3 : 5);
+                    const start = Math.floor(Math.random() * (maxStart + 1));
+                    indices = [start];
                     for (let i = 1; i < count; i++) {
-                        const step = Math.floor(Math.random() * 2) + 2; // +2 或 +3
+                        const step = (count === 4) ? 2 : (Math.random() < 0.6 ? 2 : 3);
                         indices.push(indices[i - 1] + step);
                     }
                     if (indices[indices.length - 1] < SCALE.length) valid = true;
                 }
+                if (!valid) {
+                    indices = count === 2 ? [0, 2] : (count === 3 ? [0, 2, 4] : [0, 2, 4, 6]);
+                }
             } else if (type === 'skipwise-down') {
-                // 下行跳進（相鄰差值至少 <= -2）
                 let valid = false;
-                while (!valid) {
-                    indices = [SCALE.length - 1 - Math.floor(Math.random() * 2)];
+                let attempts = 0;
+                while (!valid && attempts < 100) {
+                    attempts++;
+                    const minStart = count === 4 ? 6 : (count === 3 ? 4 : 2);
+                    const start = minStart + Math.floor(Math.random() * (SCALE.length - minStart));
+                    indices = [start];
                     for (let i = 1; i < count; i++) {
-                        const step = Math.floor(Math.random() * 2) + 2;
+                        const step = (count === 4) ? 2 : (Math.random() < 0.6 ? 2 : 3);
                         indices.push(indices[i - 1] - step);
                     }
                     if (indices[indices.length - 1] >= 0) valid = true;
+                }
+                if (!valid) {
+                    indices = count === 2 ? [7, 5] : (count === 3 ? [7, 5, 3] : [7, 5, 3, 1]);
                 }
             }
 
@@ -573,7 +580,7 @@
             area.innerHTML = '';
 
             if (!q.isStaff) {
-                // 渲染音名卡片
+                // 渲染音名 / 唱名卡片
                 const row = document.createElement('div');
                 row.className = 'cards-row';
                 q.notes.forEach((item, i) => {
@@ -586,28 +593,28 @@
                         <div class="note-name">${item.solfege}</div>
                     `;
                     row.appendChild(card);
-                    playTone(item.freq, i * 0.14);
+                    playTone(item.freq, i * 0.16);
                 });
                 area.appendChild(row);
             } else {
-                // 渲染原生 SVG 五線譜
+                // 渲染 SVG 五線譜全音符（無符幹、空心符頭）
                 const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
                 svg.setAttribute('viewBox', '0 0 520 180');
                 svg.setAttribute('class', 'staff-svg');
 
-                // 畫 5 條線 (y = 40, 60, 80, 100, 120)
+                // 畫 5 條五線譜線 (y = 40, 60, 80, 100, 120)
                 for (let y = 40; y <= 120; y += 20) {
                     const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
                     line.setAttribute('x1', '20');
                     line.setAttribute('y1', y);
                     line.setAttribute('x2', '500');
                     line.setAttribute('y2', y);
-                    line.setAttribute('stroke', '#666');
+                    line.setAttribute('stroke', '#555');
                     line.setAttribute('stroke-width', '2');
                     svg.appendChild(line);
                 }
 
-                // 高音譜號符號 (Treble Clef Text)
+                // 高音譜號符號
                 const clef = document.createElementNS("http://www.w3.org/2000/svg", "text");
                 clef.setAttribute('x', '26');
                 clef.setAttribute('y', '118');
@@ -616,58 +623,41 @@
                 clef.textContent = '𝄞';
                 svg.appendChild(clef);
 
-                // 計算音符 X 與 Y 座標
+                // 計算音符水平與垂直分佈
                 const noteCount = q.notes.length;
-                const startX = 130;
-                const spacing = (500 - startX - 30) / Math.max(1, noteCount - 1);
+                const startX = 140;
+                const spacing = (490 - startX - 30) / Math.max(1, noteCount - 1);
 
                 q.notes.forEach((item, i) => {
                     const cx = noteCount === 1 ? 260 : startX + i * spacing;
-                    // Y 座標公式：C4 (pitchIndex 0) 在 y=140，每升高一度減 10px
+                    // C4 (pitchIndex 0) 在 y=140，每升高一度 Y 軸減少 10px
                     const cy = 140 - (item.pitchIndex * 10);
 
-                    // 中央 C4 加線 (y = 140)
+                    // 中央 C4 加線
                     if (item.pitchIndex === 0) {
                         const ledger = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                        ledger.setAttribute('x1', cx - 18);
+                        ledger.setAttribute('x1', cx - 22);
                         ledger.setAttribute('y1', '140');
-                        ledger.setAttribute('x2', cx + 18);
+                        ledger.setAttribute('x2', cx + 22);
                         ledger.setAttribute('y2', '140');
-                        ledger.setAttribute('stroke', '#444');
+                        ledger.setAttribute('stroke', '#333');
                         ledger.setAttribute('stroke-width', '2.5');
                         svg.appendChild(ledger);
                     }
 
-                    // 符頭 (橢圓)
-                    const noteHead = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
-                    noteHead.setAttribute('cx', cx);
-                    noteHead.setAttribute('cy', cy);
-                    noteHead.setAttribute('rx', '11');
-                    noteHead.setAttribute('ry', '8.5');
-                    noteHead.setAttribute('fill', NOTE_COLORS[item.note]);
-                    noteHead.setAttribute('stroke', '#333');
-                    noteHead.setAttribute('stroke-width', '2');
-                    noteHead.setAttribute('transform', `rotate(-20 ${cx} ${cy})`);
-                    svg.appendChild(noteHead);
+                    // 全音符：空心橢圓、傾斜無符幹
+                    const wholeNote = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+                    wholeNote.setAttribute('cx', cx);
+                    wholeNote.setAttribute('cy', cy);
+                    wholeNote.setAttribute('rx', '13.5');
+                    wholeNote.setAttribute('ry', '9');
+                    wholeNote.setAttribute('fill', '#ffffff');
+                    wholeNote.setAttribute('stroke', '#222222');
+                    wholeNote.setAttribute('stroke-width', '4');
+                    wholeNote.setAttribute('transform', `rotate(-18 ${cx} ${cy})`);
+                    svg.appendChild(wholeNote);
 
-                    // 符幹 (方向：低音符幹向上，高音向下)
-                    const stem = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                    if (cy >= 80) { // 符幹向上
-                        stem.setAttribute('x1', cx + 9);
-                        stem.setAttribute('y1', cy);
-                        stem.setAttribute('x2', cx + 9);
-                        stem.setAttribute('y2', cy - 36);
-                    } else { // 符幹向下
-                        stem.setAttribute('x1', cx - 9);
-                        stem.setAttribute('y1', cy);
-                        stem.setAttribute('x2', cx - 9);
-                        stem.setAttribute('y2', cy + 36);
-                    }
-                    stem.setAttribute('stroke', '#333');
-                    stem.setAttribute('stroke-width', '2.5');
-                    svg.appendChild(stem);
-
-                    playTone(item.freq, i * 0.14);
+                    playTone(item.freq, i * 0.16);
                 });
 
                 area.appendChild(svg);
@@ -679,6 +669,7 @@
             renderQuestion(currentQuestion);
         }
 
+        // 答題判定與扣分
         function checkAnswer(chosen) {
             if (!isGaming) return;
 
@@ -691,14 +682,16 @@
                 feedback.className = "feedback correct";
             } else {
                 streak = 0;
-                feedback.textContent = `😅 答錯了！該題正確為：${getCategoryName(currentQuestion.type)}`;
+                // 第 2 項規則：答錯扣 5 分 (最低為 0 分)
+                score = Math.max(0, score - 5);
+                feedback.textContent = `😅 答錯扣 5 分！該題為：${getCategoryName(currentQuestion.type)}`;
                 feedback.className = "feedback incorrect";
             }
 
             document.getElementById('score').textContent = score;
             document.getElementById('streak').textContent = maxStreak;
 
-            setTimeout(nextRound, 260);
+            setTimeout(nextRound, 240);
         }
 
         function getCategoryName(type) {
@@ -756,8 +749,8 @@
             showLeaderboard();
         }
 
-        // 本地排行榜 (localStorage)
-        const STORAGE_KEY = 'melody_levels_board_v1';
+        // 排行榜機制
+        const STORAGE_KEY = 'melody_levels_board_v2';
 
         function getLeaderboard() {
             const raw = localStorage.getItem(STORAGE_KEY);
