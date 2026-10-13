@@ -437,7 +437,7 @@
     </div>
 
     <script>
-        // 嚴格限定於 8 度之內的音階（C4 到 C5，共 8 個自然音級）
+        // 限定於 8 度之內的音階（C4 到 C5，共 8 個自然音級）
         const SCALE = [
             { note: 'C', solfege: 'Do', freq: 261.63, pitchIndex: 0 },
             { note: 'D', solfege: 'Re', freq: 293.66, pitchIndex: 1 },
@@ -512,14 +512,13 @@
             switchView('homeView');
         }
 
-        // 題目生成核心：嚴格遵照 2音、3音、4音 規則，且音程維持在 8 度內
+        // 題目生成核心：音符走向判定
         function generateQuestion(level) {
-            // 第 4 項規則：Lv 1,2 -> 2 音；Lv 3,4 -> 3 音；Lv 5,6 -> 4 音
             let count = 2;
             if (level === 3 || level === 4) count = 3;
             else if (level === 5 || level === 6) count = 4;
 
-            const isStaff = (level % 2 === 0); // 偶數關為五線譜，奇數關為音名
+            const isStaff = (level % 2 === 0);
             const type = CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)];
             let indices = [];
 
@@ -597,7 +596,7 @@
                 });
                 area.appendChild(row);
             } else {
-                // 渲染 SVG 五線譜全音符（無符幹、空心符頭）
+                // 渲染 SVG 五線譜全音符（線上音符顯示穿透直線）
                 const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
                 svg.setAttribute('viewBox', '0 0 520 180');
                 svg.setAttribute('class', 'staff-svg');
@@ -609,12 +608,12 @@
                     line.setAttribute('y1', y);
                     line.setAttribute('x2', '500');
                     line.setAttribute('y2', y);
-                    line.setAttribute('stroke', '#555');
+                    line.setAttribute('stroke', '#444');
                     line.setAttribute('stroke-width', '2');
                     svg.appendChild(line);
                 }
 
-                // 高音譜號符號
+                // 高音譜號
                 const clef = document.createElementNS("http://www.w3.org/2000/svg", "text");
                 clef.setAttribute('x', '26');
                 clef.setAttribute('y', '118');
@@ -633,28 +632,28 @@
                     // C4 (pitchIndex 0) 在 y=140，每升高一度 Y 軸減少 10px
                     const cy = 140 - (item.pitchIndex * 10);
 
-                    // 中央 C4 加線
+                    // 中央 C4 加線 (下加一線)
                     if (item.pitchIndex === 0) {
                         const ledger = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                        ledger.setAttribute('x1', cx - 22);
+                        ledger.setAttribute('x1', cx - 25);
                         ledger.setAttribute('y1', '140');
-                        ledger.setAttribute('x2', cx + 22);
+                        ledger.setAttribute('x2', cx + 25);
                         ledger.setAttribute('y2', '140');
-                        ledger.setAttribute('stroke', '#333');
-                        ledger.setAttribute('stroke-width', '2.5');
+                        ledger.setAttribute('stroke', '#444');
+                        ledger.setAttribute('stroke-width', '2');
                         svg.appendChild(ledger);
                     }
 
-                    // 全音符：空心橢圓、傾斜無符幹
+                    // 全音符：fill="none" 確保線上音符能清楚看到線穿透符心
                     const wholeNote = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
                     wholeNote.setAttribute('cx', cx);
                     wholeNote.setAttribute('cy', cy);
                     wholeNote.setAttribute('rx', '13.5');
-                    wholeNote.setAttribute('ry', '9');
-                    wholeNote.setAttribute('fill', '#ffffff');
-                    wholeNote.setAttribute('stroke', '#222222');
-                    wholeNote.setAttribute('stroke-width', '4');
-                    wholeNote.setAttribute('transform', `rotate(-18 ${cx} ${cy})`);
+                    wholeNote.setAttribute('ry', '8.5');
+                    wholeNote.setAttribute('fill', 'none'); // 透明空心，譜線自然穿過
+                    wholeNote.setAttribute('stroke', '#1a1a1a');
+                    wholeNote.setAttribute('stroke-width', '3.5');
+                    wholeNote.setAttribute('transform', `rotate(-15 ${cx} ${cy})`);
                     svg.appendChild(wholeNote);
 
                     playTone(item.freq, i * 0.16);
@@ -682,7 +681,6 @@
                 feedback.className = "feedback correct";
             } else {
                 streak = 0;
-                // 第 2 項規則：答錯扣 5 分 (最低為 0 分)
                 score = Math.max(0, score - 5);
                 feedback.textContent = `😅 答錯扣 5 分！該題為：${getCategoryName(currentQuestion.type)}`;
                 feedback.className = "feedback incorrect";
